@@ -31,7 +31,8 @@ PATH_TO_EXCEL = os.path.join( os.getcwd() , 'Alexnet50K-HEVC.xls')
 # END = START + 1 
 
 START = 1
-END   = 1 + 50000  
+# END   = 1 + 50000  
+END   = 1 + 10 
 
 
 # Create bpp ORG, SSIM Org, PSNR ORG lists.
