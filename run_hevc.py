@@ -58,9 +58,9 @@ def writeFileContents(image, lines):
 
 
 QP = []
-QP.append(51)
-for i in range(50, 0, -2):
-    QP.append(i)
+# QP.append(51)
+# for i in range(50, 0, -2):
+#     QP.append(i)
 QP.append(0)
 
 for imgID in range(START, END):
@@ -89,8 +89,13 @@ for imgID in range(START, END):
 
     # Encode via FFMPEG x265 to a different YUV file
     lines = []
+
+    # for time
+    t = [0, 0, 0, 0]
+
     for qp in QP:
 
+        tStart = time.time()
         # 265:
         output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
         cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt yuv420p -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
@@ -98,28 +103,45 @@ for imgID in range(START, END):
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
+        t[0] += time.time() - tStart
+        
+
         # YUV:
+        tStart = time.time()
         recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
         cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt yuv420p ' + recons_image
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
+
+        t[1] += time.time() - tStart
+        
 
         # Calculate SSIM, PSNR, bpp
         output_stats = output_path_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
         cmd = './calc_quality ' + current_image + " " + recons_image + " " + output_265 +  " " + output_stats
         p = os.popen(cmd).read()
 
+        t[2] += time.time() - tStart
+        
+
         # Merge the text files on the go
+        tStart = time.time()
         output_stats_unified = output_path_stats_unified + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
         lines = readFileContents(output_stats)
         writeFileContents(output_stats_unified, lines)
         os.remove(output_stats)
 
+        t[3] += time.time() - tStart
+        
+        
         # print(imgID)
         # print(qp)
         
-    
-    if not original_img_ID % 1:
+    # print ('Elapsed time for 265 is %d seconds. ' % (t[0]))
+    # print ('Elapsed time for YUV is %d seconds. ' % (t[1]))
+    # print ('Elapsed time for calc_quality is %d seconds. ' % (t[2]))
+    # print ('Elapsed time for aggregate files is %d seconds. ' % (t[3]))
+    if not original_img_ID % 100:
         print('Image ID %s is done.' % imgID)
 
         # print(current_image)
