@@ -1,4 +1,6 @@
-f="./test_file/ILSVRC2012_val_00001000_504_336_RGB_0_1.265"
+# f="./test_file/ILSVRC2012_val_00001000_504_336_RGB_0_1.265"
+
+f="./test_file/1000_0.265"
 
 # frame_size=$(ffprobe -show_frames $f | grep pkt_size=)
 # frame_size=$(echo $frame_size | tr -cd [:digit:])
