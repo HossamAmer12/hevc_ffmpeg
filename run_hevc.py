@@ -146,10 +146,10 @@ for imgID in range(START, END):
         # print(imgID)
         # print(qp)
         
-    print ('Elapsed time for 265 is %f seconds. ' % (t[0]))
-    print ('Elapsed time for YUV is %f seconds. ' % (t[1]))
-    print ('Elapsed time for calc_quality is %f seconds. ' % (t[2]))
-    print ('Elapsed time for aggregate files is %f seconds. ' % (t[3]))
+    # print ('Elapsed time for 265 is %f seconds. ' % (t[0]))
+    # print ('Elapsed time for YUV is %f seconds. ' % (t[1]))
+    # print ('Elapsed time for calc_quality is %f seconds. ' % (t[2]))
+    # print ('Elapsed time for aggregate files is %f seconds. ' % (t[3]))
     if not original_img_ID % 100:
         print('Image ID %s is done.' % imgID)
 
