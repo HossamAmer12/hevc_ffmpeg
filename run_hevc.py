@@ -105,7 +105,7 @@ for imgID in range(START, END):
 
         t[0] += time.time() - tStart
         
-
+        tStart = time.time()
         # YUV:
         tStart = time.time()
         recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
@@ -115,7 +115,7 @@ for imgID in range(START, END):
 
         t[1] += time.time() - tStart
         
-
+        tStart = time.time()
         # Calculate SSIM, PSNR, bpp
         output_stats = output_path_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
         cmd = './calc_quality ' + current_image + " " + recons_image + " " + output_265 +  " " + output_stats
@@ -123,16 +123,14 @@ for imgID in range(START, END):
 
         t[2] += time.time() - tStart
         
-
-        # Merge the text files on the go
-        tStart = time.time()
-        output_stats_unified = output_path_stats_unified + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
-        lines = readFileContents(output_stats)
-        writeFileContents(output_stats_unified, lines)
-        os.remove(output_stats)
-
-        t[3] += time.time() - tStart
-        
+        if not len(QP):        
+            tStart = time.time()
+            # Merge the text files on the go
+            output_stats_unified = output_path_stats_unified + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
+            lines = readFileContents(output_stats)
+            writeFileContents(output_stats_unified, lines)
+            os.remove(output_stats)
+            t[3] += time.time() - tStart
         
         # print(imgID)
         # print(qp)
