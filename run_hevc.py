@@ -121,8 +121,7 @@ for imgID in range(START, END):
         cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt ' + input_format + ' -preset ultrafast ' + recons_image
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
-        print(cmd)
-        exit(0)
+        # print(cmd)
 
         t[1] += time.time() - tStart
         
