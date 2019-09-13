@@ -91,7 +91,7 @@ for imgID in range(START, END):
     lines = []
 
     # for time
-    t = [0, 0, 0, 0]
+    t = [0.0, 0.0, 0.0, 0.0]
 
     for qp in QP:
 
@@ -109,7 +109,7 @@ for imgID in range(START, END):
         # YUV:
         tStart = time.time()
         recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
-        cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt yuv420p ' + recons_image
+        cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt yuv420p -preset ultrafast ' + recons_image
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
@@ -135,11 +135,11 @@ for imgID in range(START, END):
         # print(imgID)
         # print(qp)
         
-    # print ('Elapsed time for 265 is %d seconds. ' % (t[0]))
-    # print ('Elapsed time for YUV is %d seconds. ' % (t[1]))
-    # print ('Elapsed time for calc_quality is %d seconds. ' % (t[2]))
-    # print ('Elapsed time for aggregate files is %d seconds. ' % (t[3]))
-    if not original_img_ID % 100:
+    print ('Elapsed time for 265 is %f seconds. ' % (t[0]))
+    print ('Elapsed time for YUV is %f seconds. ' % (t[1]))
+    print ('Elapsed time for calc_quality is %f seconds. ' % (t[2]))
+    print ('Elapsed time for aggregate files is %f seconds. ' % (t[3]))
+    if not original_img_ID % 1:
         print('Image ID %s is done.' % imgID)
 
         # print(current_image)
