@@ -110,12 +110,15 @@ for imgID in range(START, END):
         p = os.popen(cmd).read()
 
         # Merge the text files on the go
-        output_stats_unified = output_path_stats_unified + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
+        output_stats_unified = output_path_stats_unified + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
         lines = readFileContents(output_stats)
         writeFileContents(output_stats_unified, lines)
         os.remove(output_stats)
         
-        
+    
+    if not original_img_ID % 1:
+        print('Image ID %s is done.' % imgID)
+
         # print(current_image)
         # print(recons_image)
         # print(output_265)
