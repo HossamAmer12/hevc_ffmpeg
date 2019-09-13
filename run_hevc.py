@@ -19,8 +19,11 @@ import glob
 
 PATH_TO_EXCEL = os.path.join( os.getcwd() , 'Alexnet50K-HEVC.xls') 
 
-START = 1
-END = 2
+# START = 1
+# END = 2
+
+START = 1000
+END = START + 1 
 
 # Create bpp ORG, SSIM Org, PSNR ORG lists.
 shard_num = 0
@@ -28,6 +31,7 @@ shard_num = 0
 MAIN_PATH    = '/media/h2amer/MULTICOM102/103_HA/MULTICOM103/set_yuv/'
 image_dir    = os.path.join(MAIN_PATH, 'pics')
 output_path  = os.path.join(MAIN_PATH, 'Seq-RECONS-ffmpeg')
+output_path_265  = os.path.join(MAIN_PATH, 'Seq-265-ffmpeg')
 output_stats = os.path.join(MAIN_PATH, 'Seq-Stats-ffmpeg') 
 
 
@@ -63,20 +67,28 @@ for imgID in range(START, END):
 
     # Encode via FFMPEG x265 to a different YUV file
     for qp in QP[0:1]:
+        qp = 0
         output_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
         cmd = 'ffmpeg -f rawvideo -vcodec rawvideo -s ' + str(width) + 'x' + str(height) +  ' -pix_fmt yuv420p -i ' \
         + current_image + ' -c:v libx265 -crf ' + str(qp) + ' -preset ultrafast ' + output_image
-        
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
-        # print(current_image)
-        # print(output_image)
+        output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
+        cmd = 'ffmpeg -f rawvideo -vcodec rawvideo -s ' + str(width) + 'x' + str(height) +  ' -pix_fmt yuv420p -i ' \
+        + current_image + ' -c:v libx265 -crf ' + str(qp) + ' -preset ultrafast ' + output_265
+        p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
+        out, err = p.communicate()
+
+        print(current_image)
+        print(output_image)
+        print(output_265)
         # if(err):
         #     print('')
         
         # Calculate SSIM, PSNR, bits
         output_stats = output_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
+
 
 
  #    filesList = glob.glob(path_to_txt_files + 'ILSVRC2012_val_' + imgID + '*.txt')
