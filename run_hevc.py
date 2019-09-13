@@ -123,7 +123,7 @@ for imgID in range(START, END):
 
         t[2] += time.time() - tStart
         
-        if not len(QP):        
+        if len(QP) != 1:        
             tStart = time.time()
             # Merge the text files on the go
             output_stats_unified = output_path_stats_unified + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
