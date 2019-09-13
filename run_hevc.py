@@ -114,6 +114,9 @@ for imgID in range(START, END):
         lines = readFileContents(output_stats)
         writeFileContents(output_stats_unified, lines)
         os.remove(output_stats)
+
+        # print(imgID)
+        # print(qp)
         
     
     if not original_img_ID % 1:
