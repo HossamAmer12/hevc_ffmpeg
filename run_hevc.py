@@ -152,7 +152,7 @@ for imgID in range(START, END):
     # print ('Elapsed time for calc_quality is %f seconds. ' % (t[2]))
     # print ('Elapsed time for aggregate files is %f seconds. ' % (t[3]))
     if not original_img_ID % 50:
-        print('Image ID %s is done in %f seconds.' % (imgID, (sum(t))) )
+        print('Image ID %s is done in %f seconds' % (imgID, (sum(t))) )
         t = [0.0, 0.0, 0.0, 0.0]
 
         # print(current_image)
