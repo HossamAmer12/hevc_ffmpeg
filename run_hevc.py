@@ -28,11 +28,13 @@ PATH_TO_EXCEL = os.path.join( os.getcwd() , 'Alexnet50K-HEVC.xls')
 
 # For initial debugging:
 # START = 1000
+# Y only testing ILSVRC2012_val_00000126_504_376_Y.yuv
+# START = 126
 # END = START + 1 
 
 START = 1
-# END   = 1 + 50000  
-END   = 1 + 10 
+END   = 1 + 50000  
+
 
 
 # Create bpp ORG, SSIM Org, PSNR ORG lists.
@@ -84,8 +86,14 @@ for imgID in range(START, END):
     height = int(name.split('_')[-2])
     width = int(name.split('_')[-3])
 
+    if rgbStr.__contains__('Y'):
+        input_format = 'gray'
+    else:
+        input_format = 'yuv420p'
+
     # Construct current image
     current_image = image_dir + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.yuv'
+
 
     # Encode via FFMPEG x265 to a different YUV file
     lines = []
@@ -98,7 +106,8 @@ for imgID in range(START, END):
         tStart = time.time()
         # 265:
         output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
-        cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt yuv420p -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
+
+        cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt ' + input_format + ' -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
         + current_image + ' -c:v hevc -crf ' + str(qp) + ' -f hevc -preset ultrafast ' + output_265
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
@@ -109,9 +118,11 @@ for imgID in range(START, END):
         # YUV:
         tStart = time.time()
         recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
-        cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt yuv420p -preset ultrafast ' + recons_image
+        cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt ' + input_format + ' -preset ultrafast ' + recons_image
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
+        print(cmd)
+        exit(0)
 
         t[1] += time.time() - tStart
         
@@ -139,7 +150,7 @@ for imgID in range(START, END):
     print ('Elapsed time for YUV is %f seconds. ' % (t[1]))
     print ('Elapsed time for calc_quality is %f seconds. ' % (t[2]))
     print ('Elapsed time for aggregate files is %f seconds. ' % (t[3]))
-    if not original_img_ID % 1:
+    if not original_img_ID % 100:
         print('Image ID %s is done.' % imgID)
 
         # print(current_image)
