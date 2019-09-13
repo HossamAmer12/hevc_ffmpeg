@@ -71,28 +71,26 @@ for imgID in range(START, END):
 
     # Encode via FFMPEG x265 to a different YUV file
     for qp in QP[0:1]:
-        qp = 0
-        output_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
+        qp = 51
+        recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
 
-        # YUV:
-        # ffmpeg -f rawvideo -vcodec rawvideo -s 504x336 -pix_fmt yuv420p -i $INPUT_FILE -c:v hevc -crf $QP -preset ultrafast $OUTPUT_DEC_FILE
-        cmd = 'ffmpeg -f rawvideo -vcodec rawvideo -s ' + str(width) + 'x' + str(height) +  ' -pix_fmt yuv420p -i ' \
-        + current_image + ' -c:v libx265 -crf ' + str(qp) + ' -preset slow ' + output_image
-        #print(cmd)
+    
+        # 265:
+        output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
+        cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt yuv420p -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
+        + current_image + ' -c:v hevc -crf ' + str(qp) + ' -f hevc -preset ultrafast ' + output_265
+        # print(cmd)
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
-        # 265:
-        output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
-        # ffmpeg -f rawvideo -pix_fmt yuv420p -s:v 504x336  -i $INPUT_FILE -c:v hevc -crf $QP -f hevc -preset ultrafast $OUTPUT_ENC_FILE
-        cmd = 'ffmpeg -f rawvideo -pix_fmt yuv420p -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
-        + current_image + ' -c:v libx265 -crf ' + str(qp) + ' -f hevc -preset slow ' + output_265
-        #print(cmd)
+        # YUV:
+        cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt yuv420p ' + recons_image
+        # print(cmd)
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
         # print(current_image)
-        # print(output_image)
+        # print(recons_image)
         # print(output_265)
         # if(err):
         #     print('')
