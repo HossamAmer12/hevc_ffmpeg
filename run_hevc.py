@@ -26,8 +26,13 @@ PATH_TO_EXCEL = os.path.join( os.getcwd() , 'Alexnet50K-HEVC.xls')
 # START = 1
 # END = 2
 
-START = 1000
-END = START + 1 
+# For initial debugging:
+# START = 1000
+# END = START + 1 
+
+START = 1
+END   = 1 + 50000  
+
 
 # Create bpp ORG, SSIM Org, PSNR ORG lists.
 shard_num = 0
@@ -36,7 +41,19 @@ MAIN_PATH    = '/media/h2amer/MULTICOM102/103_HA/MULTICOM103/set_yuv/'
 image_dir    = os.path.join(MAIN_PATH, 'pics')
 output_path  = os.path.join(MAIN_PATH, 'Seq-RECONS-ffmpeg')
 output_path_265  = os.path.join(MAIN_PATH, 'Seq-265-ffmpeg')
-output_stats = os.path.join(MAIN_PATH, 'Seq-Stats-ffmpeg') 
+output_path_stats = os.path.join(MAIN_PATH, 'Gen/Seq-Stats') 
+output_path_stats_unified = os.path.join(MAIN_PATH, 'Gen/Seq-Stats-Unified') 
+
+def readFileContents(image):
+    f = open(image, "r")    
+    lines = f.readlines()
+    f.close()
+    return lines
+
+def writeFileContents(image, lines):
+    f = open(image, "a")
+    f.write(''.join(lines))
+    f.close()
 
 
 QP = []
@@ -70,6 +87,7 @@ for imgID in range(START, END):
     current_image = image_dir + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.yuv'
 
     # Encode via FFMPEG x265 to a different YUV file
+    lines = []
     for qp in QP[0:1]:
         qp = 51
         recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
@@ -89,32 +107,23 @@ for imgID in range(START, END):
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
+        # Calculate SSIM, PSNR, bpp
+        output_stats = output_path_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
+        cmd = './calc_quality ' + current_image + " " + recons_image + " " + output_265 +  " " + output_stats
+        p = os.popen(cmd).read()
+
+        # Merge the text files on the go
+        output_stats_unified = output_path_stats_unified + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
+        lines = readFileContents(output_stats)
+        writeFileContents(output_stats_unified, lines)
+        os.remove(output_stats)
+        
+        
         # print(current_image)
         # print(recons_image)
         # print(output_265)
+        # print(output_stats)
+        # print(output_stats_unified)
+        
         # if(err):
         #     print('')
-        
-        # Calculate SSIM, PSNR, bits
-        output_stats = output_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
-
-
-
- #    filesList = glob.glob(path_to_txt_files + 'ILSVRC2012_val_' + imgID + '*.txt')
- #    name = filesList[0].split('/')[-1]
-	# qp = name.split('_')[-1].split('.')[0]
-	# rgbStr = name.split('_')[-2]
-	# height = int(name.split('_')[-3])
-	# width  = int(name.split('_')[-4])
-
- #    INPUT_FILE = path_out_txt_files + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.txt'
-	# OUTPUT_ENC_FILE="./test_file/1000_0.265"
-	# OUTPUT_DEC_FILE="./test_file/1000_0.yuv"
-	# QP=0
-
-
-	# cmd=['ffmpeg', '-f rawvideo -vcodec rawvideo -s', str(width), 'x', str(height), '-pix_fmt yuv420p -i', INPUT_FILE, '-c:v libx265 -crf ', QP, '-preset ultrafast', OUTPUT_DEC_FILE1]
-	# print(cmd)
-    #subprocess.call(['ffmpeg', '-i', INPUT_FILE, 'output.avi'])
-
-
