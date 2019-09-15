@@ -29,7 +29,7 @@ PATH_TO_EXCEL = os.path.join( os.getcwd() , 'Alexnet50K-HEVC.xls')
 # For initial debugging:
 # START = 1000
 # Y only testing ILSVRC2012_val_00000126_504_376_Y.yuv
-# START = 126
+# START = 34
 # END = START + 1 
 
 START = 1
@@ -63,7 +63,8 @@ QP = []
 # QP.append(51)
 # for i in range(50, 0, -2):
 #     QP.append(i)
-QP.append(0)
+QP.append(2)
+print(QP)
 
 # for time
 t = [0.0, 0.0, 0.0, 0.0]
@@ -77,7 +78,7 @@ for imgID in range(START, END):
     
 
     check_shard = (original_img_ID-1)/10000
-    if not check_shard % 1 and original_img_ID != 10001 or prev_shard > shard_num: # check if a number is integer
+    if not check_shard % 1 and original_img_ID != 10001 or prev_shard > shard_num and prev_shard != 0: # check if a number is integer
         shard_num = shard_num + 1
     
     folder_num = math.ceil(original_img_ID/1000)
@@ -89,13 +90,36 @@ for imgID in range(START, END):
     height = int(name.split('_')[-2])
     width = int(name.split('_')[-3])
 
+     # Construct current image
+    current_image = image_dir + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.yuv'
+
     if rgbStr.__contains__('Y'):
         input_format = 'gray'
     else:
         input_format = 'yuv420p'
 
-    # Construct current image
-    current_image = image_dir + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '.yuv'
+        # Calculate SSIM, PSNR, bpp
+        qp = QP[0]
+        output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
+        recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
+        output_stats = output_path_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
+        cmd = './calc_quality ' + current_image + " " + recons_image + " " + output_265 +  " " + output_stats
+        p = os.popen(cmd).read()
+        continue # continue for now
+
+   
+    # current_jpeg_image: for Y only
+    #/home/h2amer/work/workspace/ML_TS/validation_original/shard-0/1/ILSVRC2012_val_00000034.JPEG
+    current_jpeg_image = os.path.join('/home/h2amer/work/workspace/ML_TS/validation_original/', 'shard-' + str(shard_num) + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '.JPEG')  
+
+    # convert jpeg into yuv ussing ffmpeg    
+    if rgbStr.__contains__('Y'):
+        cmd = 'ffmpeg -y -i ' + current_jpeg_image + ' -s ' + str(width) + 'x' + str(height) + ' -pix_fmt ' + input_format + ' ' + current_image
+        # print(cmd)
+        # print(current_jpeg_image)
+        # print(current_image)
+        p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
+        out, err = p.communicate()
 
 
     # Encode via FFMPEG x265 to a different YUV file
@@ -111,6 +135,8 @@ for imgID in range(START, END):
 
         cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt ' + input_format + ' -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
         + current_image + ' -c:v hevc -crf ' + str(qp) + ' -f hevc -preset ultrafast ' + output_265
+
+
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
