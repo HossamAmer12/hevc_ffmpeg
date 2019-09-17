@@ -60,16 +60,18 @@ def writeFileContents(image, lines):
 
 
 QP = []
+QP.append(51)
+for i in range(50, 0, -2):
+    QP.append(i)
 # QP.append(51)
-# for i in range(50, 0, -2):
-#     QP.append(i)
-QP.append(2)
+QP.append(0)
 print(QP)
 
 # for time
 t = [0.0, 0.0, 0.0, 0.0]
 
 for imgID in range(START, END):
+# for imgID in range(107, 107 + 1):
 
     original_img_ID = imgID
     imgID = str(imgID).zfill(8)
@@ -133,6 +135,7 @@ for imgID in range(START, END):
         # 265:
         output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
 
+
         cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt ' + input_format + ' -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
         + current_image + ' -c:v hevc -crf ' + str(qp) + ' -f hevc -preset ultrafast ' + output_265
 
@@ -146,7 +149,7 @@ for imgID in range(START, END):
         # YUV:
         tStart = time.time()
         recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
-        cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -c:v rawvideo -pix_fmt ' + input_format + ' -preset ultrafast ' + recons_image
+        cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -s ' +  str(width) + 'x' + str(height) + ' -c:v rawvideo -pix_fmt ' + input_format + ' -preset ultrafast ' + recons_image
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
         # print(cmd)
