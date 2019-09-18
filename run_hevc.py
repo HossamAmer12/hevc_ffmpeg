@@ -60,11 +60,12 @@ def writeFileContents(image, lines):
 
 
 QP = []
-QP.append(51)
-for i in range(50, 0, -2):
-    QP.append(i)
 # QP.append(51)
-QP.append(0)
+# for i in range(50, 0, -2):
+#     QP.append(i)
+# # QP.append(51)
+
+QP.append(51)
 print(QP)
 
 # for time
@@ -72,6 +73,7 @@ t = [0.0, 0.0, 0.0, 0.0]
 
 for imgID in range(START, END):
 # for imgID in range(107, 107 + 1):
+# for imgID in range(1, 1 + 1):
 
     original_img_ID = imgID
     imgID = str(imgID).zfill(8)
@@ -99,15 +101,16 @@ for imgID in range(START, END):
         input_format = 'gray'
     else:
         input_format = 'yuv420p'
+        continue 
 
         # Calculate SSIM, PSNR, bpp
-        qp = QP[0]
-        output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
-        recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
-        output_stats = output_path_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
-        cmd = './calc_quality ' + current_image + " " + recons_image + " " + output_265 +  " " + output_stats
-        p = os.popen(cmd).read()
-        continue # continue for now
+        # qp = QP[0]
+        # output_265 = output_path_265 + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.265'
+        # recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
+        # output_stats = output_path_stats + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.txt'
+        # cmd = './calc_quality ' + current_image + " " + recons_image + " " + output_265 +  " " + output_stats
+        # p = os.popen(cmd).read()
+        #continue # continue for now
 
    
     # current_jpeg_image: for Y only
@@ -115,13 +118,13 @@ for imgID in range(START, END):
     current_jpeg_image = os.path.join('/home/h2amer/work/workspace/ML_TS/validation_original/', 'shard-' + str(shard_num) + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '.JPEG')  
 
     # convert jpeg into yuv ussing ffmpeg    
-    if rgbStr.__contains__('Y'):
-        cmd = 'ffmpeg -y -i ' + current_jpeg_image + ' -s ' + str(width) + 'x' + str(height) + ' -pix_fmt ' + input_format + ' ' + current_image
-        # print(cmd)
-        # print(current_jpeg_image)
-        # print(current_image)
-        p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
-        out, err = p.communicate()
+    # if rgbStr.__contains__('Y'):
+    #     cmd = 'ffmpeg -y -i ' + current_jpeg_image + ' -s ' + str(width) + 'x' + str(height) + ' -pix_fmt ' + input_format + ' ' + current_image
+    #     # print(cmd)
+    #     # print(current_jpeg_image)
+    #     # print(current_image)
+    #     p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
+    #     out, err = p.communicate()
 
 
     # Encode via FFMPEG x265 to a different YUV file
