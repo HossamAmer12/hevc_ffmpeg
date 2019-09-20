@@ -63,13 +63,13 @@ QP = []
 # QP.append(51)
 # for i in range(50, 0, -2):
 #     QP.append(i)
-QP.append(40)
+QP.append(51)
 print(QP)
 
 # for time
 t = [0.0, 0.0, 0.0, 0.0]
 
-for imgID in range(1, 1 + 49):
+for imgID in range(START, END):
 
     original_img_ID = imgID
     imgID = str(imgID).zfill(8)
@@ -110,9 +110,9 @@ for imgID in range(1, 1 + 49):
     print(imgID, p)
     t[0] += time.time() - tStart
 
-    if not original_img_ID % 1:
+    if not original_img_ID % 50:
         print('Image ID %s is done in %f seconds' % (imgID, (sum(t))) )
         t = [0.0, 0.0, 0.0, 0.0]
-    continue # continue for now
+
 
    
