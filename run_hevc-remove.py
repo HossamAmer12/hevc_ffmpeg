@@ -59,11 +59,12 @@ def writeFileContents(image, lines):
     f.close()
 
 
-QP = []
+QP=[]
+
 # QP.append(51)
 # for i in range(50, 0, -2):
 #     QP.append(i)
-QP.append(51)
+QP.append(0)
 print(QP)
 
 # for time
