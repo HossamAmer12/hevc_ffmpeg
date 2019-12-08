@@ -36,8 +36,8 @@ PATH_TO_EXCEL = os.path.join( os.getcwd() , 'Alexnet50K-HEVC.xls')
 #END   = 1 + 10000  
 
 
-START = 1
-END   = 1 + 1000
+START = 1001
+END   = 1 + 2000
 
 
 # Create bpp ORG, SSIM Org, PSNR ORG lists.
@@ -65,6 +65,8 @@ output_path_stats_unified = os.path.join(MAIN_PATH, 'Gen/Seq-Stats-Unified-noInL
 def ensure_dir_exists(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
+    else:
+        print(directory, ' exists.')
 
 def readFileContents(image):
     f = open(image, "r")    
@@ -96,8 +98,8 @@ ensure_dir_exists(output_path_stats_unified)
 # for time
 t = [0.0, 0.0, 0.0, 0.0]
 
-# for imgID in range(START, END):
-for imgID in range(1, 2):
+for imgID in range(START, END):
+#for imgID in range(1, 2):
 # for imgID in range(107, 107 + 1):
 #for imgID in range(651, 651 + 1):
 # for imgID in range(18454, 18454 + 1):
@@ -174,7 +176,7 @@ for imgID in range(1, 2):
         #  + current_image + ' -c:v hevc -crf ' + str(qp) + ' -f hevc -preset ultrafast -x265-params no-deblock=1:no-sao=1:ctu=16:min-cu-size=8 ' + output_265
         cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt ' + input_format + ' -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
          + current_image + ' -c:v hevc -crf ' + str(qp) + ' -f hevc -preset ultrafast -x265-params no-deblock=1:no-sao=1:ctu=16:min-cu-size=8 ' + output_265
-        print(cmd)
+        #print(cmd)
 
         #cmd = 'ffmpeg -y -f rawvideo -pix_fmt yuv420p -s:v 504x384 -i /media/h2amer/MULTICOM105/103_HA/MULTICOM103/set_yuv/test/1/ILSVRC2012_val_00000651_504_384_RGB.yuv -c:v hevc -crf 51 -f hevc -preset ultrafast -x265-params no-deblock=1 /media/h2amer/MULTICOM105/103_HA/MULTICOM103/set_yuv/Seq-265-ffmpeg-noInLoop/1/ILSVRC2012_val_00000651_504_384_RGB_51.265'
         
@@ -188,11 +190,11 @@ for imgID in range(1, 2):
         tStart = time.time()
         recons_image = output_path + '/' + str(folder_num) + '/' + 'ILSVRC2012_val_' + imgID + '_' + str(width) + '_' + str(height) + '_' + rgbStr + '_' + str(qp) + '.yuv'
         cmd = 'ffmpeg -loglevel panic -y  -i ' + output_265 + ' -s ' +  str(width) + 'x' + str(height) + ' -c:v rawvideo -pix_fmt ' + input_format + ' -preset ultrafast ' + recons_image
-        print(cmd)
+        #print(cmd)
         p = sp.Popen(cmd, stdout=sp.PIPE, stderr=sp.PIPE, shell=True)
         out, err = p.communicate()
 
-        # special edge cases like 706:
+        # special edge cases like 706, then allow non-conformance:
         if not os.path.exists(recons_image):
             cmd = 'ffmpeg -loglevel panic -y -f rawvideo -pix_fmt ' + input_format + ' -s:v ' + str(width) + 'x' + str(height) +  ' -i ' \
             + current_image + ' -c:v hevc -crf ' + str(qp) + ' -f hevc -preset ultrafast -x265-params no-deblock=1:no-sao=1:ctu=16:min-cu-size=8:allow-non-conformance ' + output_265
