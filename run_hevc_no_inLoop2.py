@@ -57,9 +57,9 @@ shard_num = 0
 # MAIN_PATH    = '/media/h2amer/MULTICOM105/103_HA/MULTICOM103/set_yuv/'
 MAIN_PATH    = '/media/h2amer/MULTICOM-104/103_HA/MULTICOM103/set_yuv/'
 image_dir    = os.path.join(MAIN_PATH, 'test')
-output_path  = os.path.join(MAIN_PATH, 'Seq-RECONS-ffmpeg-noInLoop_168')
-output_path_265  = os.path.join(MAIN_PATH, 'Seq-265-ffmpeg-noInLoop_168')
-output_path_stats = os.path.join(MAIN_PATH, 'Gen/Seq-Stats-noInLoop_168')
+output_path  = os.path.join(MAIN_PATH, 'Seq-RECONS-ffmpeg-InLoop_168')
+output_path_265  = os.path.join(MAIN_PATH, 'Seq-265-ffmpeg-InLoop_168')
+output_path_stats = os.path.join(MAIN_PATH, 'Gen/Seq-Stats-InLoop_168')
 output_path_stats_unified = os.path.join(MAIN_PATH, 'Gen/Seq-Stats-Unified-noInLoop_168') 
 
 
